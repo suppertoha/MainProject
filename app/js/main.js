@@ -11,6 +11,12 @@
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_PicturesOnAPI__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/PicturesOnAPI */ "./src/js/components/PicturesOnAPI.js");
 /* harmony import */ var _components_PicturesOnAPI__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_components_PicturesOnAPI__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _components_filmSearch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/filmSearch */ "./src/js/components/filmSearch.js");
+/* harmony import */ var _components_filmSearch__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_components_filmSearch__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _components_CatchTheSquare__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/CatchTheSquare */ "./src/js/components/CatchTheSquare.js");
+/* harmony import */ var _components_CatchTheSquare__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_components_CatchTheSquare__WEBPACK_IMPORTED_MODULE_2__);
+
+
 
 
 /***/ }),
@@ -147,6 +153,119 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./src/js/components/CatchTheSquare.js":
+/*!*********************************************!*\
+  !*** ./src/js/components/CatchTheSquare.js ***!
+  \*********************************************/
+/***/ (() => {
+
+const $app = document.querySelector('.app');
+function CatchTheSquare() {
+  if (!$app) return;
+  const $start = $app.querySelector('#start'),
+    $game = $app.querySelector('#game'),
+    $time = $app.querySelector('#time'),
+    $resultHeader = $app.querySelector('#result-header'),
+    $gameTime = $app.querySelector('#game-time'),
+    $result = $app.querySelector('#result'),
+    $reset = $app.querySelector('#reset'),
+    $timeHeader = $app.querySelector('#time-header');
+  let score = 0;
+  let isGameStarted = false;
+  let resScore = 0;
+  let resCount = 0;
+  let timeAndScore = {};
+  $start.addEventListener('click', startGame);
+  $game.addEventListener('click', work);
+  $reset.addEventListener('click', endGame);
+  $gameTime.addEventListener('input', setGameTime);
+  function startGame() {
+    isGameStarted = true;
+    score = 0;
+    setGameTime();
+    remove($timeHeader);
+    add($resultHeader);
+    $game.style.background = '#fff';
+    this.classList.add('hide');
+    elementGame();
+    $gameTime.disabled = true;
+    setIntervalGame();
+  }
+  function setIntervalGame() {
+    let interval = setInterval(function () {
+      let time = parseFloat($time.textContent);
+      if (time <= 0 || !isGameStarted) {
+        clearInterval(interval);
+        endGame();
+      } else {
+        time = (time - 0.1).toFixed(1);
+        $time.textContent = time.toString();
+      }
+    }, 100);
+  }
+  function endGame() {
+    isGameStarted = false;
+    setGameScore();
+    $game.style.background = '#1d1d1d';
+    $game.innerHTML = '';
+    remove($resultHeader);
+    remove($start);
+    add($timeHeader);
+    $gameTime.disabled = false;
+    local();
+  }
+  function work(e) {
+    if (!isGameStarted) return;
+    if (e.target.dataset.square === 'true') {
+      $game.innerHTML = '';
+      elementGame();
+      score++;
+    }
+  }
+  function setGameScore() {
+    $result.textContent = score.toString();
+    resScore = +score;
+    return resScore;
+  }
+  function setGameTime() {
+    $gameTime.value = $gameTime.value.replace(/[^0-9]/g, '');
+    let count = $gameTime.value;
+    remove($timeHeader);
+    add($resultHeader);
+    $time.textContent = count;
+    resCount = +count;
+    return resCount;
+  }
+  function elementGame() {
+    const $square = document.createElement('div');
+    const size = randomValue(30, 100);
+    const top = $game.offsetHeight - size;
+    const left = $game.offsetWidth - size;
+    $square.setAttribute('data-square', 'true');
+    $square.style.cssText = 'position: absolute; cursor: pointer';
+    $square.style.width = $square.style.height = size + 'px';
+    $square.style.top = randomValue(0, top) + 'px';
+    $square.style.left = randomValue(0, left) + 'px';
+    $square.style.background = `rgb(${randomValue(0, 255)} ${randomValue(0, 255)} ${randomValue(0, 255)})`;
+    $game.insertAdjacentElement('afterbegin', $square);
+  }
+  function randomValue(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+  function remove($el) {
+    $el.classList.remove('hide');
+  }
+  function add($el) {
+    $el.classList.add('hide');
+  }
+  function local() {}
+}
+CatchTheSquare();
+
+/***/ }),
+
 /***/ "./src/js/components/PicturesOnAPI.js":
 /*!********************************************!*\
   !*** ./src/js/components/PicturesOnAPI.js ***!
@@ -156,47 +275,81 @@ __webpack_require__.r(__webpack_exports__);
 const pictureImg = document.querySelector('.picture-api__image img');
 const pictureButton = document.querySelector('.picture-api__button');
 const url = 'https://randomfox.ca/floof/';
+if (pictureButton) {
+  //! с помощью fetch
+  async function fetchHandler() {
+    const response = await fetch(url);
+    if (response.ok) {
+      const data = await response.json();
+      pictureImg.src = data.image;
+    } else {
+      alert("Ошибка HTTP: " + response.status);
+    }
+  }
+  pictureButton.addEventListener('click', fetchHandler);
 
-//! с помощью fetch
-async function fetchHandler() {
-  const response = await fetch(url);
-  if (response.ok) {
-    const data = await response.json();
-    pictureImg.src = data.image;
-  } else {
-    alert("Ошибка HTTP: " + response.status);
+  //! с помощью promice
+  function fetchHandlerPromise() {
+    fetch(url).then(response => response.json()).then(data => {
+      const imageUrl = data.image;
+      pictureImg.src = imageUrl;
+    }).catch(error => {
+      console.error('Произошла ошибка при получении данных:', error);
+    });
+  }
+
+  //pictureButton.addEventListener('click', fetchHandlerPromise);
+
+  //! с помощью AJAX
+
+  function fetchHandlerAJAX() {
+    const request = new XMLHttpRequest();
+    request.open('POST', url);
+    request.send();
+    request.addEventListener('load', () => {
+      if (request.status === 200) {
+        const responseData = JSON.parse(request.responseText);
+        const imageUrl = responseData.image;
+        pictureImg.src = imageUrl;
+      }
+    });
+  }
+
+  //pictureButton.addEventListener('click', fetchHandlerAJAX);
+}
+
+/***/ }),
+
+/***/ "./src/js/components/filmSearch.js":
+/*!*****************************************!*\
+  !*** ./src/js/components/filmSearch.js ***!
+  \*****************************************/
+/***/ (() => {
+
+const filmContainer = document.querySelector('.film-search');
+function showMoviesBlock() {
+  if (!filmContainer) return;
+  const API_KEY = "8c8e1a50-6322-4135-8875-5d40a5420d86";
+  const API_URL_POPULAR = "https://kinopoiskapiunofficial.tech/api/v2.2/films/top?type=TOP_100_POPULAR_FILMS&page=1";
+  getMovies(API_URL_POPULAR);
+  async function getMovies(url) {
+    const resp = await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+        "X-API-KEY": API_KEY
+      }
+    });
+    const respData = await resp.json();
+    showMovies(respData);
+  }
+  function showMovies(data) {
+    const bodyMovie = document.querySelector('.block-film__items');
+    data.films.forEach(movie => {
+      console.log(movie);
+    });
   }
 }
-pictureButton.addEventListener('click', fetchHandler);
-
-//! с помощью promice
-function fetchHandlerPromise() {
-  fetch(url).then(response => response.json()).then(data => {
-    const imageUrl = data.image;
-    pictureImg.src = imageUrl;
-  }).catch(error => {
-    console.error('Произошла ошибка при получении данных:', error);
-  });
-}
-
-//pictureButton.addEventListener('click', fetchHandlerPromise);
-
-//! с помощью AJAX
-
-function fetchHandlerAJAX() {
-  const request = new XMLHttpRequest();
-  request.open('POST', url);
-  request.send();
-  request.addEventListener('load', () => {
-    if (request.status === 200) {
-      const responseData = JSON.parse(request.responseText);
-      const imageUrl = responseData.image;
-      pictureImg.src = imageUrl;
-    }
-  });
-}
-
-//pictureButton.addEventListener('click', fetchHandlerAJAX);
+showMoviesBlock();
 
 /***/ }),
 

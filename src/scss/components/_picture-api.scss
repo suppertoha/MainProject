@@ -1,0 +1,33 @@
+.picture-api {
+
+  &__inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__image {
+  width: 800px;
+  background: #333333;
+  border-radius: 20px;
+  overflow: hidden;
+
+    img{
+      width: 100%;
+      height: auto;
+    }
+
+    margin-bottom: 50px;
+    padding: 30px;
+    box-shadow: 0px 0px 30px #dcab75;
+
+    @media screen and (max-width: 850px) {
+      width: 500px;
+    }
+
+    @media screen and (max-width: 600px) {
+      width: 300px;
+    }
+  }
+}
