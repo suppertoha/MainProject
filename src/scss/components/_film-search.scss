@@ -3,7 +3,7 @@
   .btn {
     width: 100%;
   }
-  
+
   input{
     width: 100%;
     padding: 10px;
@@ -79,12 +79,16 @@
 		}
 }
 
-.block-film {
+.cards-film {
 
 		&__items {
       display: grid;
       grid-gap: 30px;
       grid-template-columns: repeat(3, 1fr);
+
+      //display: grid;
+      //grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      //gap: 30px;
 		}
 
 		&__card {
@@ -103,9 +107,9 @@
 		&__image {
       display: flex;
       align-items: flex-start;
-      width: 50%;
-      align-self: center;
+      align-items: flex-start;
       margin-right: 20px;
+      min-width: 150px;
       img{
         object-position: top;
         max-height: 200px;
@@ -116,6 +120,7 @@
       color: #fff;
       display: flex;
       flex-direction: column;
+      flex-grow: 1;
 		}
 
 		&__type {
@@ -131,7 +136,24 @@
 
 		&__year {
       font-size: 16px;
-      margin-bottom: 10px;
+      margin-bottom: 20px;
+		}
+
+    &__rating {
+      font-size: 20px;
+      margin-bottom: 20px;
+
+      &--orange{
+        color: orange;
+      }
+
+      &--red{
+        color: #e94040;
+      }
+
+      &--green{
+        color: green;
+      }
 		}
 
 		&__button {
